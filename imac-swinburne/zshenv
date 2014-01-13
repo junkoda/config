@@ -1,0 +1,30 @@
+export EDITOR=e
+export ALTERNATE_EDITOR=Emacs
+
+export PATH=$HOME/Research/bin:/opt/local/bin:/opt/local/sbin:$PATH:${HOME}/Dropbox/Geek/bin
+
+export LS_COLORS="no=00:fi=00:di=01;34:ln=00;36:*.tar=00;31:*.tgz=00;31:*.zip=00;31:*.gz=00;31:*.bz2=00;31"
+
+export CC=gcc
+export CXX=g++
+export MPICXX=mpicxx
+export WOPT="-Wall -W -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Wconversion -Wmissing-prototypes -Wredundant-decls"
+
+export PRINTER=AR350-HPLJP4515X
+# setenv PRINTER AR350-HPCLJCP4525N # color
+
+#alias lprc "lpr -P$color"
+
+# LIB
+#setenv GSLDIR $HOME/Research/opt/gcc/gsl
+#setenv HDF5DIR $HOME/Research/opt/gcc/hdf5/hdf5-1.8.8
+#setenv FFTW2DIR $HOME/Research/opt/gcc/fftw2
+#setenv FFTW3DIR $HOME/Research/opt/gcc/fftw3/fftw-3.3.3
+#setenv BOOSTDIR /opt/local
+
+export GSL_DIR=$HOME/Research/opt/gcc/gsl
+export FFTW2_DIR=$HOME/Research/opt/gcc/fftw2
+export FFTW3_DIR=$HOME/Research/opt/gcc/fftw3/fftw-3.3.3
+export BOOST_DIR=/opt/local
+
+export BOOST_PROGRAM_OPTIONS=-lboost_program_options-mt

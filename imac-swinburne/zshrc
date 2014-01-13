@@ -1,0 +1,59 @@
+# 補完
+autoload -U compinit; compinit # 補完機能を有効にする
+setopt auto_list               # 補完候補を一覧で表示する(d)
+
+setopt no_beep                 # ビープ音を鳴らさないようにする
+setopt auto_pushd              # cd時にディレクトリスタックにpushdする
+
+# color
+autoload colors; colors
+
+# prompt
+#PROMPT='%F{3}%m%f %2c%# '     # name@host
+PROMPT='%F{1}imac%f %2c%# '    # imac(red) two directory names
+RPROMPT="%{$fg[black]%(?.$fg[green].$fg[red])%}%?%{$reset_color%}"
+                               # 終了ステータス 0 は緑色、それ以外は赤色
+
+### History ###
+HISTFILE=~/.zsh_history        # ヒストリを保存するファイル
+HISTSIZE=20                    # メモリに保存されるヒストリの件数
+SAVEHIST=20                    # 保存されるヒストリの件数
+setopt bang_hist               # !を使ったヒストリ展開を行う(d)
+setopt extended_history        # ヒストリに実行時間も保存する
+setopt hist_ignore_dups        # 直前と同じコマンドはヒストリに追加しない
+setopt hist_reduce_blanks      # 余分なスペースを削除してヒストリに保存する
+setopt hist_ignore_space       # 先頭にスペースを入れると履歴に残さない
+
+
+# emacs-like binding
+bindkey -e
+
+bindkey '^[[1;5D'   backward-word           # ctrl+left
+bindkey '^[[1;5C'   forward-word            # ctrl+right
+
+# マッチしたコマンドのヒストリを表示できるようにする
+autoload history-search-end
+zle -N history-beginning-search-backward-end history-search-end
+zle -N history-beginning-search-forward-end history-search-end
+bindkey "^P" history-beginning-search-backward-end
+bindkey "^N" history-beginning-search-forward-end
+
+# for non-english filename
+# setopt print_eight_bit
+
+alias ls='/opt/local/bin/gls --color=auto --show-control-char '
+
+if [ ${SSH_CLIENT-undefined} = "undefined" ]; then 
+  # not remote connection
+  alias emacs='/Applications/MacPorts/Emacs.app/Contents/MacOS/Emacs'
+fi
+
+alias e='emacsclient --alternate-editor=emacs'
+
+# 補完カスタム
+function _open() {
+  compadd $(ls *.(pdf|png))
+}
+compdef _open open
+
+
