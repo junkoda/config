@@ -1,0 +1,7 @@
+[user]
+	name = Jun Koda
+	email = jun.koda@brera.inaf.it
+[color]
+	ui = auto
+[core]
+	editor = emacs
