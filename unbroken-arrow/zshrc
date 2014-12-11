@@ -1,0 +1,198 @@
+
+# 補完
+autoload -U compinit; compinit # 補完機能を有効にする
+#autoload -U compinit promptinit
+setopt auto_list               # 補完候補を一覧で表示する(d)
+
+setopt no_beep           # ビープ音を鳴らさないようにする
+# setopt auto_pushd        # cd時にディレクトリスタックにpushdする
+
+# color
+autoload colors; colors
+
+# prompt
+#PROMPT='%F{6}unbroken-arrow %f %2c%# '   # name@host
+#RPROMPT="%{$fg[black]%(?.$fg[green].$fg[red])%}%?%{$reset_color%}"
+  # 終了ステータス 0 は緑色、それ以外は赤色
+
+### History ###
+HISTFILE=~/.zsh_history   # ヒストリを保存するファイル
+HISTSIZE=10000            # メモリに保存されるヒストリの件数
+SAVEHIST=10000            # 保存されるヒストリの件数
+setopt bang_hist          # !を使ったヒストリ展開を行う(d)
+setopt extended_history   # ヒストリに実行時間も保存する
+setopt hist_ignore_dups   # 直前と同じコマンドはヒストリに追加しない
+# setopt share_history      # 他のシェルのヒストリをリアルタイムで共有する
+setopt hist_reduce_blanks # 余分なスペースを削除してヒストリに保存する
+setopt hist_ignore_space  #先頭にスペースを入れると履歴に残さない
+
+
+# emacs-like binding
+bindkey -e
+
+bindkey '^[[1;5D'   backward-word           # ctrl+left
+bindkey '^[[1;5C'   forward-word            # ctrl+right
+
+# マッチしたコマンドのヒストリを表示できるようにする
+autoload history-search-end
+zle -N history-beginning-search-backward-end history-search-end
+zle -N history-beginning-search-forward-end history-search-end
+bindkey "^P" history-beginning-search-backward-end
+bindkey "^N" history-beginning-search-forward-end
+
+# for non-english filename
+# setopt print_eight_bit
+
+# setopt no_flow_control
+# setopt interactive_comments
+
+# 移動
+setopt auto_cd
+# cdpath=(.. ~/Research ~/Research/papers ~/Research/work)
+
+#alias ls='/opt/local/bin/gls --color=auto --show-control-char '
+alias ls='gls --color=auto --show-control-char '
+alias subl='/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl'
+
+if [ ${SSH_CLIENT-undefined} = "undefined" ]; then 
+  # not remote connection
+  alias emacs='/usr/local/Cellar/emacs/24.4/Emacs.app/Contents/MacOS/Emacs'
+  alias o='open'
+  #alias emacs='/Applications/MacPorts/Emacs.app/Contents/MacOS/Emacs'
+  #alias preview='open -a Preview'
+  #alias v='open -a Preview'
+fi
+
+alias e='emacsclient --alternate-editor=emacs'
+
+# . ~/Research/bin/z.sh
+
+# 補完カスタム
+function _open() {
+  compadd $(ls *.(pdf|png))
+}
+
+compdef _open open
+
+# ssh補完は ~/.ssh/config にある host のみにする
+function _ssh {
+  compadd `grep '^Host ' ~/.ssh/config | awk '{print $2}'`
+}
+
+function _scp {
+  compadd `grep '^Host ' ~/.ssh/config | awk '{print $2}'`
+  compadd `gls -B`
+}
+
+compdef _scp scp
+
+function _sh {
+  compadd `ls *.sh`
+}
+
+#function precmd () {
+#  _z --add "$(pwd -P)"
+#}
+
+
+function _z {
+  compadd `cat $HOME/.peco/z-dir`
+}
+
+compdef _z z
+
+function z() {
+  local PCD_FILE=$HOME/.peco/.peco-cd
+  local PCD_RETURN
+
+  if [ $1 ] && [ $1 = "add" ]; then
+    # z add <dir>
+    if [ $2 ]; then
+      ADD_DIR=$2
+      if [ $2 = "." ]; then
+        ADD_DIR=$(pwd) 
+      fi
+      echo "add $ADD_DIR to $PCD_FILE"
+      echo $ADD_DIR >> $PCD_FILE
+    fi
+  elif [ $1 ] && [ $1 = "edit" ]; then
+    # z edit
+    if [ $EDITOR ]; then
+      $EDITOR $PCD_FILE
+    fi
+  elif [ $1 ] && [ $1 = "." ]; then
+    PCD_RETURN=$(/bin/ls -F | grep /$ | sort | peco)
+  elif [ $1 ]; then
+    # z <dir> unique matching
+    local GREP_RETURN
+    local grepcmd="cat $PCD_FILE"
+    for pat in $*
+    do
+      grepcmd="$grepcmd | grep -e '/$pat'"
+    done
+
+    grepcmd=`echo $grepcmd | sed "s/'$/\$'/"`
+    #echo $grepcmd
+
+    GREP_RETURN=`eval $grepcmd`
+    echo "grep return = $GREP_RETURN"
+
+    if [ `expr "$GREP_RETURN" : '.*'` -ne 0 -a \
+	 $(echo $GREP_RETURN | wc -l) -eq 1 ]; then
+      # unique match
+      PCD_RETURN=$GREP_RETURN
+      #echo "$PCD_RETURN"
+    else
+      PCD_RETURN=$(cat $PCD_FILE | sort | peco --query "$*")
+    fi
+  else
+    PCD_RETURN=$(cat $PCD_FILE | sort | peco)
+  fi
+
+  if [ $PCD_RETURN ]; then
+    cd $PCD_RETURN
+  fi
+}
+
+# Enter 空コマンド
+function do_enter() {
+    if [ -n "$BUFFER" ]; then
+        zle accept-line
+        return 0
+    fi
+    echo
+    ls
+    # ↓おすすめ
+    # ls_abbrev
+    if [ "$(git rev-parse --is-inside-work-tree 2> /dev/null)" = 'true' ]; then
+        echo
+        echo -e "\e[0;33m--- git status ---\e[0m"
+        git status -sb
+    fi
+    zle reset-prompt
+    return 0
+}
+zle -N do_enter
+bindkey '^m' do_enter
+
+# Oh-my-zsh
+export ZSH=$HOME/.oh-my-zsh
+#ZSH_THEME="robbyrussell"
+ZSH_THEME="wedisagree"
+
+# robbyrussell
+#local ret_status="%(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ %s)"
+#PROMPT=""%(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ %s)"%{${reset_color}%} %f %2c%# "
+
+#PROMPT='${ret_status}%{$fg_bold[green]%}%p %{$fg[cyan]%}%c [blue]%}$(git_prompt_info)%{$fg_bold[blue]%} % %{$reset_color%}'
+
+#ZSH_THEME_GIT_PROMPT_PREFIX="git:(%{$fg[red]%}"
+#ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}"
+#ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[blue]%}) %{$fg[yellow]%}✗%{$reset_color%}"
+#ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg[blue]%})"
+
+source $ZSH/oh-my-zsh.sh
+plugins=(git)
+
+PROMPT='%2c%# '
+#RPROMPT="%{$fg[black]%(?.$fg[green].$fg[red])%}%?%{$reset_color%}"

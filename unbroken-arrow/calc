@@ -1,0 +1,14 @@
+#!/bin/sh
+
+if [ $# -lt 1 ]; then
+  echo "calc 1+1"
+  exit
+fi
+
+
+#ruby -e "include Math; puts $eq"
+
+eq=$@
+Rscript -e "$eq"
+
+#"cat(sprintf(\"%f\n\", $@))"

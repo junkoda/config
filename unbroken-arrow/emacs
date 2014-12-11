@@ -15,6 +15,21 @@
 (global-auto-revert-mode 1)
 (column-number-mode t)
 
+
+;;???
+;;(setq-default basic-offset 2) ;;?
+;;(setq standard-indent 2) ;;?
+;;(setq-default tab-width 2)
+
+
+;;(setq-default ess-indent-level 2)
+;;(setq-default c-basic-offset 2)
+
+;;(setq-default sh-basic-offset 2) ;;??
+;;(setq sh-default-style 'GNU)
+(setq-default sh-basic-offset 2)
+(setq-default sh-indentation 2)
+
 ;; server start for emacs-client
 ;;(require 'server)
 ;;(unless (server-running-p)
@@ -30,18 +45,33 @@
 (add-to-list 'interpreter-mode-alist '("lua" . lua-mode))
 
 ;; R Mode
-(add-to-list 'load-path "~/Research/usr/emacs/ess/lisp")
-(load "ess-site.el")
+;;(add-to-list 'load-path "~/Research/usr/emacs/ess/lisp")
+(add-to-list 'load-path "~/.emacs.d/ess/lisp")
+(load "ess-site")
+(setq ess-default-style 'GNU)
+(setq ess-fancy-comments nil)
+;;(setq ess-indent-level 2)
+;;(setq ess-basic-offset 2)
+;;(setq ess-expression-offset 2)
 
 
 ;; Gnuplot mode
 (autoload 'gnuplot-mode "gnuplot" "gnuplot major mode" t)
 (autoload 'gnuplot-make-buffer "gnuplot" "open a buffer in gnuplot mode" t)
-(setq auto-mode-alist (append '(("\\.gp$" . gnuplot-mode)) auto-mode-alist))
+(setq auto-mode-alist (append '(("\\.plt$" . gnuplot-mode)) auto-mode-alist))
 
 ;; Ruby Mode
 ;;(autoload 'lua-mode "ruby-mode" "Ruby mode." t)
 ;;(add-to-list 'auto-mode-alist '("\\.rb$" . ruby-mode))
+
+;; Anything/Helm
+;;(add-to-list 'load-path "~/.emacs.d/helm")
+;;(add-to-list 'load-path "~/.emacs.d/emacs-async")
+;;(require 'helm-config)
+;;(global-set-key (kbd "C-x C-f") 'helm-find-files)
+;;(global-set-key (kbd "C-x C-b") 'helm-buffers-list)
+;;(define-key global-map (kbd "C-x b") 'anything)
+;;(global-set-key (kbd "\C-xb") 'helm-M-x)
 
 ;; Disable quitting with cmd+q
 (global-set-key (kbd "s-q") 'fill-paragraph)

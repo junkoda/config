@@ -1,0 +1,5 @@
+export PATH="$HOME/Research/bin:$PATH"
+export EDITOR=emacs
+#export LC_CTYPE="en_US.utf8"
+
+export LUA_DIR=
