@@ -1,0 +1,9 @@
+[user]
+	name = Jun Koda
+	email = jkoda@astro.swin.edu.au
+[color]
+	ui = auto
+[core]
+	editor = emacs
+[push]
+	default = simple
