@@ -1,0 +1,9 @@
+source /Users/junkoda/Dropbox/junkoda/config/zshrc
+
+. /Users/junkoda/System/bin/z.sh
+
+PROMPT='%F{3}goodluck%f %2c%# '   # name@host
+
+alias emacs='/usr/local/Cellar/emacs/24.4/Emacs.app/Contents/MacOS/Emacs'
+
+export PATH=$PATH:/usr/local/Cellar/ruby/2.1.0/bin:$HOME/Bin

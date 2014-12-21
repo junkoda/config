@@ -1,0 +1,5 @@
+;;
+;; Uncommon configurations. For MacBook Air only.
+;;
+(setq initial-frame-alist
+      (append '((left . 590) (width . 80) (height . 50)) initial-frame-alist))
