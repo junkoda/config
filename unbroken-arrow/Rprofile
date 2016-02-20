@@ -1,2 +1,5 @@
 # quit with Q
 class(Q)=Q="no";print.no=q
+class(exit)=exit="no";print.no=q
+
+options(repos = structure(c(CRAN = "http://cran.mirror.garr.it/mirrors/CRAN/")))
