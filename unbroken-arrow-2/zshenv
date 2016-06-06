@@ -1,0 +1,8 @@
+
+export PATH=$HOME/Research/bin:$PATH
+export EDITOR=emacs
+export HOMEBREW_GITHUB_API_TOKEN="b1fe6830091fca194691ba400233f9aca1ae12eb"
+
+export LD_LIBRARY_PATH=$HOME/Research/lib:$LD_LIBRARY_PATH
+export DYLD_LIBRARY_PATH=$HOME/Research/lib
+

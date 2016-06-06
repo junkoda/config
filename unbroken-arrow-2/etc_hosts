@@ -1,0 +1,19 @@
+##
+# Host Database
+#
+# localhost is used to configure the loopback interface
+# when the system is booting.  Do not change this entry.
+##
+0.0.0.0         adm.shinobi.jp shinobi.jp
+0.0.0.0         d-cache.microad.jp microad.jp
+0.0.0.0         d.adroll.com
+0.0.0.0         doubleclick.net pubads.g.doubleclick.net
+0.0.0.0         ad.jp.doubleclick.net
+0.0.0.0         adclick.g.doubleclick.net g.doubleclick.net
+0.0.0.0         doubleclick.net googleads.g.doubleclick.net
+0.0.0.0         cat.jp.as.criteo.com jp.as.criteo.com as.criteo.com criteo.com
+0.0.0.0		click.fout.jp
+0.0.0.0         ads.adjust-net.jp
+127.0.0.1	localhost
+255.255.255.255	broadcasthost
+::1             localhost 

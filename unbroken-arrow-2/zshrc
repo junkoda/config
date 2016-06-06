@@ -1,0 +1,142 @@
+# Created by newuser for 5.2
+
+autoload -U compinit; compinit
+autoload colors; colors
+
+# prompt
+PROMPT='%F{6}unbroken-arrow %f %2c%# '
+RPROMPT="%{$fg[black]%(?.$fg[green].$fg[red])%}%?%{$reset_color%}"
+# exit status 0 => green, 1 => red
+
+#function precmd() {
+#  pwd | sed 's|.*/.*/
+#  echo -ne "\e]1;$PWD\a"
+#  echo "hello"
+#}
+
+# Terminal window and tab title
+function precmd() {
+  local pwd=`pwd | sed -e "s|$HOME|~|"`
+  local dir=`pwd | sed -e 's|^.*/||'`
+  echo -ne "\033]2;$pwd\007" # window
+  echo -ne "\033]1;$dir\007" # tab
+}
+
+# alias
+alias notebook='jupyter notebook'
+alias subl='/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl'
+alias ls='gls --color=auto'
+alias e='emacsclient --alternate-editor=emacs'
+export EDITOR=emacsclient
+
+# keybord settings
+#bindkey -e
+#bindkey '^[ 1;5C' Forwardd-word 
+#bindkey '^[[1;5C' emacs-forward-word
+#bindkey '^[^[[D' emacs-backward-word
+#bindkey '^[[1;5D' emacs-backward-word
+#bindkey '^[[1;5C' emacs-forward-word
+bindkey '^[[1;5D'   backward-word           # ctrl+left ???
+bindkey '^[[1;5C'   forward-word            # ctrl+right
+#bindkey "^[Od" backward-word  \# control-left
+#bindkey "^[Oc" forward-word   \# control-right
+
+# ssh scp hostname completion
+function _ssh {
+  compadd `grep '^Host ' ~/.ssh/config | awk '{print $2}'`
+}
+
+function _scp {
+  compadd `grep '^Host ' ~/.ssh/config | awk '{print $2}'`
+  compadd `gls -B`
+}
+
+compdef _scp scp
+
+
+#
+# z: command for smart cd
+#
+# z add . : add current directory to directory list
+# z edit  : edit the directory list
+
+function _z {
+  compadd `cat $HOME/.peco/z-paths | sed 's|.*/||'`
+}
+
+compdef _z z
+
+function z() {
+  local PCD_FILE=$HOME/.peco/z-paths
+  local PCD_RETURN
+
+  if [ $1 ] && [ $1 = "add" ]; then
+    # z add <dir>
+    if [ $2 ]; then
+      ADD_DIR=$2
+      if [ $2 = "." ]; then
+        ADD_DIR=$(pwd) 
+      fi
+      echo "Adding $ADD_DIR to $PCD_FILE"
+      echo $ADD_DIR >> $PCD_FILE
+    fi
+  elif [ $1 ] && [ $1 = "edit" ]; then
+    # z edit
+    if [ $EDITOR ]; then
+      $EDITOR $PCD_FILE
+    fi
+  elif [ $1 ] && [ $1 = "." ]; then
+    PCD_RETURN=$(/bin/ls -F | grep /$ | sort | peco)
+  elif [ $1 ]; then
+    # z <dir> unique matching
+    local GREP_RETURN
+    local grepcmd="cat $PCD_FILE"
+    for pat in $*
+    do
+      grepcmd="$grepcmd | grep -e '/$pat'"
+    done
+
+    grepcmd=`echo $grepcmd | sed "s/'$/\$'/"`
+    #echo $grepcmd
+
+    GREP_RETURN=`eval $grepcmd`
+    echo "grep return = $GREP_RETURN"
+
+    if [ `expr "$GREP_RETURN" : '.*'` -ne 0 -a \
+	 $(echo $GREP_RETURN | wc -l) -eq 1 ]; then
+      # unique match
+      PCD_RETURN=$GREP_RETURN
+    else
+      PCD_RETURN=$(cat $PCD_FILE | sort | peco --query "$*")
+    fi
+  else
+    PCD_RETURN=$(cat $PCD_FILE | sort | peco)
+  fi
+
+  if [ $PCD_RETURN ]; then
+    echo $PCD_RETURN
+    cd $PCD_RETURN
+  fi
+}
+
+# every enter-key event
+function do_enter() {
+  if [ -n "$BUFFER" ]; then
+    zle accept-line
+    return 0
+  fi
+
+  # empty enter
+  echo
+  ls
+
+  if [ "$(git rev-parse --is-inside-work-tree 2> /dev/null)" = 'true' ]; then
+    echo
+    echo -e "\e[0;33m--- git status ---\e[0m"
+    git status -sb
+  fi
+  zle reset-prompt
+  return 0
+}
+zle -N do_enter
+bindkey '^m' do_enter
